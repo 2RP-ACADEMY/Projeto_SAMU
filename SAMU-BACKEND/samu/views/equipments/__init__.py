@@ -1,0 +1,5 @@
+from .createEquipmentView import CreateEquipamentView
+from .deleteEquipmentView import DeleteEquipmentView
+from .getEquipmentView import GetEquipmentView
+from .listEquipmentView import ListEquipmentView
+from .updateEquipmentView import UpdateEquipmentView

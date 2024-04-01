@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  samu-app:
+    container_name: samu-app
+    restart: always
+    build:
+      context: .
+    command:  >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    depends_on:
+      - psql
+    env_file:
+      - ./dotenv_files/.env
+
+  psql:
+    container_name: psql
+    image: postgres
+    ports:
+      - 5432:5432
+    env_file:
+      - ./dotenv_files/.env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

@@ -1,0 +1,110 @@
+CREATE TABLE users(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	username VARCHAR(70) UNIQUE NOT NULL,
+	email VARCHAR(133) UNIQUE NOT NULL,
+	password VARCHAR(128) NOT NULL,
+	last_login TIMESTAMP,
+	is_staff BOOLEAN NOT NULL DEFAULT FALSE,
+	is_superuser BOOLEAN NOT NULL DEFAULT FALSE,
+	is_active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE groups(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(150) UNIQUE NOT NULL
+);
+
+CREATE TABLE user_groups(
+	id SERIAL PRIMARY KEY,
+	user_id INTEGER REFERENCES users NOT NULL,
+	group_id INTEGER REFERENCES groups NOT NULL
+);
+
+CREATE TABLE tokens(
+	hashed_token BYTEA PRIMARY KEY,
+	created TIMESTAMP NOT NULL,
+	user_id INTEGER REFERENCES users NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS request_status(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(15) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS request_types(
+	id SERIAL PRIMARY KEY,	
+	name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS requests(
+	id SERIAL PRIMARY KEY,
+	created_at TIMESTAMP NOT NULL,
+	status_id INTEGER REFERENCES request_status NOT NULL,
+	type_id INTEGER REFERENCES request_types NOT NULL,
+	user_id INTEGER REFERENCES users
+);
+
+CREATE TABLE IF NOT EXISTS logs(
+	id SERIAL PRIMARY KEY,
+	request_id INTEGER REFERENCES requests NOT NULL,
+	type INTEGER NOT NULL,
+	details TEXT NOT NULL
+);
+
+CREATE TABLE vehicles(
+	id SERIAL PRIMARY KEY,
+	available BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE items(
+	id SERIAL PRIMARY KEY,
+	type INTEGER NOT NULL
+);
+
+CREATE TABLE materials(
+	id INTEGER PRIMARY KEY REFERENCES items,
+	name VARCHAR(100) NOT NULL,
+	description VARCHAR(300),
+	batch_code VARCHAR(30) UNIQUE NOT NULL,
+	allocable BOOLEAN NOT NULL,
+	expiration_date DATE
+);
+
+CREATE TABLE medicines(
+	id INTEGER PRIMARY KEY REFERENCES items,
+	name VARCHAR(100) NOT NULL,
+	measurement_unit INTEGER NOT NULL,
+	presentation INTEGER NOT NULL,
+	batch_code VARCHAR(30) UNIQUE NOT NULL,
+	concentration VARCHAR(60),
+	therapeutic_class VARCHAR(70)
+);
+
+CREATE TABLE equipments(
+	id INTEGER PRIMARY KEY REFERENCES items,
+	name VARCHAR(100) NOT NULL,
+	description VARCHAR(300),
+	patrimony VARCHAR(45) UNIQUE,
+	allocable BOOLEAN NOT NULL,
+	available BOOLEAN DEFAULT TRUE,
+	warranty_expire DATE
+);
+
+CREATE TABLE entries(
+	id SERIAL PRIMARY KEY,
+	item_id INTEGER REFERENCES items,
+	date DATE NOT NULL,
+	quantity INTEGER NOT NULL,
+	available_quantity INTEGER NOT NULL,
+	vehicle_id INTEGER REFERENCES vehicles,
+	reason  INTEGER NOT NULL
+);
+
+CREATE TABLE outputs(
+	id SERIAL PRIMARY KEY,
+	entry_id INTEGER NOT NULL REFERENCES entries,
+	quantity INTEGER NOT NULL,
+	date DATE NOT NULL,
+	reason INTEGER NOT NULL
+);
